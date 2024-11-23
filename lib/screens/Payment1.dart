@@ -6,7 +6,7 @@ import '../services/colors.dart';
 import '../widgets/appbar_widget.dart';
 
 class Payment extends StatefulWidget {
-  const Payment({super.key});
+  const Payment({Key, key});
 
   @override
   State<Payment> createState() => _PaymentState();
@@ -134,7 +134,7 @@ class _PaymentState extends State<Payment> {
 }
 
 class Textbattonn extends StatefulWidget {
-  Textbattonn({super.key, required this.hint, this.iconn, this.validator});
+  Textbattonn({Key, key, required this.hint, this.iconn, this.validator});
   var hint, iconn, validator;
 
   @override

@@ -5,7 +5,7 @@ import '../../services/colors.dart';
 import '../homepage/persistance_nav_bar.dart';
 
 class SuccessfullyCreate extends StatefulWidget {
-  const SuccessfullyCreate({super.key});
+  const SuccessfullyCreate({Key,key});
 
   @override
   State<SuccessfullyCreate> createState() => _SuccessfullyCreateState();

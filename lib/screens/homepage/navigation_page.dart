@@ -1,12 +1,12 @@
 import 'package:divyango_user/screens/homepage/leads.dart';
 import 'package:divyango_user/screens/homepage/profile.dart';
-import 'package:divyango_user/screens/notification.dart';
 import 'package:divyango_user/services/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 class NavigationPage extends StatefulWidget {
-  const NavigationPage({super.key});
+  const NavigationPage({Key, key});
 
   @override
   State<NavigationPage> createState() => _NavigationPageState();
@@ -27,18 +27,46 @@ class _NavigationPageState extends State<NavigationPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // appBar: _appBar(),
-
-      body: _buildScreens()[_selectedIndex],
-
-      // floatingActionButton:  CustomBottomNavBar(
-      //     selectedIndex: _selectedIndex, onItemTapped: _onItemTapped),
-
-      floatingActionButton: MediaQuery.of(context).viewInsets.bottom != 0.0 ? null : CustomBottomNavBar(
-          selectedIndex: _selectedIndex, onItemTapped: _onItemTapped),
-
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    return WillPopScope(
+      child: Scaffold(
+        // appBar: _appBar(),
+        body: _buildScreens()[_selectedIndex],
+        // floatingActionButton:  CustomBottomNavBar(
+        //     selectedIndex: _selectedIndex, onItemTapped: _onItemTapped),
+        floatingActionButton: MediaQuery.of(context).viewInsets.bottom != 0.0
+            ? null
+            : CustomBottomNavBar(
+                selectedIndex: _selectedIndex, onItemTapped: _onItemTapped),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      ),
+      onWillPop: () async {
+        showDialog(
+            context: context,
+            barrierDismissible: false,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text("Confirm Exit"),
+                content: const Text("Are you sure you want to exit?"),
+                actions: <Widget>[
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(primary: colors.primary),
+                    child: const Text("YES"),
+                    onPressed: () {
+                      SystemNavigator.pop();
+                    },
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(primary: colors.primary),
+                    child: const Text("NO"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  )
+                ],
+              );
+            });
+        return true;
+      },
     );
   }
 
@@ -121,7 +149,7 @@ class CustomBottomNavBar extends StatelessWidget {
                 padding: EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
                   color:
-                  selectedIndex == 0 ? colors.primary : Colors.transparent,
+                      selectedIndex == 0 ? colors.primary : Colors.transparent,
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: Row(
@@ -151,7 +179,7 @@ class CustomBottomNavBar extends StatelessWidget {
                 padding: EdgeInsets.symmetric(vertical: 10),
                 decoration: BoxDecoration(
                   color:
-                  selectedIndex == 1 ? colors.primary : Colors.transparent,
+                      selectedIndex == 1 ? colors.primary : Colors.transparent,
                   borderRadius: BorderRadius.circular(24),
                 ),
                 child: Row(

@@ -1,32 +1,34 @@
-import 'dart:ffi';
-import 'package:divyango_user/screens/homepage/FilterSheet.dart';
+import 'dart:convert';
+
 import 'package:divyango_user/screens/venue.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart' as http;
+
+import '../../Model/ReviewModel.dart';
+import '../../Model/VenueListModel.dart';
 import '../../services/colors.dart';
+import '../../utils/Api.path.dart';
 import '../../widgets/appbar_widget.dart';
-import '../addVenue.dart';
 
 class LeadsScreen extends StatefulWidget {
-  const LeadsScreen({Key? key}) : super(key: key);
+  final VenueData? model;
+  LeadsScreen({Key? key, this.model}) : super(key: key);
 
   @override
   State<LeadsScreen> createState() => _LeadsScreenState();
 }
 
 class _LeadsScreenState extends State<LeadsScreen> {
-  int isSelect = 1;
-  List<String> _filters = [
-    'Not Connected',
-    'UNDER FOLLOWUP',
-    'IN PROGRESS',
-    'CLIENT CLOSED',
-    'NOT ANSWERED'
-  ];
-  List<String> _selectedFilters = [];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    review();
+  }
 
+  int isSelect = 1;
+  List<String> _selectedFilters = [];
   void _selectFilter(String filter) {
     setState(() {
       if (_selectedFilters.contains(filter)) {
@@ -37,79 +39,43 @@ class _LeadsScreenState extends State<LeadsScreen> {
     });
   }
 
+  ReviewModel? reviewModel;
+
+  review() async {
+    var headers = {
+      'Cookie': 'ci_session=a03793758217097f6ee63976aee7e8508c715b65'
+    };
+    var request =
+        http.MultipartRequest('POST', Uri.parse(ApiServicves.getReview));
+    request.fields.addAll({'venue_id': widget.model!.id.toString()});
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      var result = await response.stream.bytesToString();
+      var finalResult = ReviewModel.fromJson(json.decode(result));
+      setState(() {
+        reviewModel = finalResult;
+      });
+    } else {
+      print(response.reasonPhrase);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Split the accessibility names into a list and remove duplicates
+    final List<String> accessibilityList = widget.model!.accessibilityNames!
+        .split(',')
+        .map((e) => e.trim())
+        .toSet()
+        .toList(); // Convert to Set to remove duplicates, then back to List
+
     return Scaffold(
       backgroundColor: colors.whiteTemp,
-      bottomNavigationBar: InkWell(
-        onTap: () {
-          // Handle onTap event here
-        },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              InkWell(
-                onTap: () {
-                  setState(() {
-                    isSelect = 0;
-                  });
-                  _showAlertDialog(context);
-                },
-                child: Container(
-                  height: 50,
-                  width: 155,
-                  decoration: BoxDecoration(
-                    color: isSelect == 0 ? colors.primary : Colors.white,
-                    borderRadius: BorderRadius.circular(7),
-                    border: Border.all(color: Colors.black),
-                  ),
-                  child: Center(
-                      child: Text(
-                    "Delete",
-                    style: TextStyle(
-                      color: isSelect == 1 ? Colors.black : Colors.white,
-                    ),
-                  )),
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  setState(() {
-                    isSelect = 1;
-                  });
-                  Navigator.pop(context);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => EditVenueDetail(
-                                appBarTitle: "Edit Venue Detail",
-                              )));
-                },
-                child: Container(
-                  height: 50,
-                  width: 155,
-                  decoration: BoxDecoration(
-                    color: isSelect == 1 ? colors.primary : Colors.white,
-                    borderRadius: BorderRadius.circular(7),
-                    border: Border.all(color: Colors.black),
-                  ),
-                  child: Center(
-                      child: Text(
-                    "Edit",
-                    style: TextStyle(
-                      color: isSelect == 1 ? Colors.white : Colors.black,
-                    ),
-                  )),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
       appBar: appBarWithBackWidget(
-          context: context, title: 'Venue Detail', color: colors.whiteTemp1),
+          context: context,
+          title: '                     Venue Detail',
+          color: colors.whiteTemp1),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -123,8 +89,9 @@ class _LeadsScreenState extends State<LeadsScreen> {
                   width: 110,
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(8),
-                      image: const DecorationImage(
-                          image: AssetImage('assets/images/demo.png'),
+                      image: DecorationImage(
+                          image: NetworkImage(
+                              '${ApiServicves.imageUrl}${widget.model?.image}'),
                           fit: BoxFit.cover)),
                 ),
                 const SizedBox(
@@ -137,9 +104,9 @@ class _LeadsScreenState extends State<LeadsScreen> {
                     const SizedBox(
                       height: 10,
                     ),
-                    const Text(
-                      'Destiny Cafe',
-                      style: TextStyle(
+                    Text(
+                      '${widget.model?.name}',
+                      style: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                       ),
@@ -149,7 +116,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
                     ),
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.location_on_outlined,
                           size: 20,
                           color: Colors.grey,
@@ -157,9 +124,14 @@ class _LeadsScreenState extends State<LeadsScreen> {
                         const SizedBox(
                           width: 4,
                         ),
-                        const Text(
-                          '2972 Westheimer Rd. San...',
-                          style: TextStyle(color: Colors.grey, fontSize: 13),
+                        Container(
+                          width: 200,
+                          child: Text(
+                            '${widget.model?.address}',
+                            style: const TextStyle(
+                                color: Colors.grey, fontSize: 13),
+                            maxLines: 2,
+                          ),
                         ),
                       ],
                     ),
@@ -168,7 +140,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
                     ),
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           CupertinoIcons.phone,
                           size: 20,
                           color: Colors.grey,
@@ -176,9 +148,9 @@ class _LeadsScreenState extends State<LeadsScreen> {
                         const SizedBox(
                           width: 4,
                         ),
-                        const Text(
-                          '8435457271',
-                          style: TextStyle(color: Colors.grey),
+                        Text(
+                          '${widget.model?.mobile}',
+                          style: const TextStyle(color: Colors.grey),
                         ),
                       ],
                     ),
@@ -192,12 +164,12 @@ class _LeadsScreenState extends State<LeadsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Business hours',
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
-                SizedBox(height: 12),
-                Text(
+                const SizedBox(height: 12),
+                const Text(
                   'Start & End Time',
                   style: TextStyle(
                       color: Colors.grey,
@@ -205,194 +177,178 @@ class _LeadsScreenState extends State<LeadsScreen> {
                       fontWeight: FontWeight.w600),
                 ),
                 Text(
-                  '09:00 AM - 11:00',
-                  style: TextStyle(
+                  '${widget.model?.startTime} - ${widget.model?.endTime}',
+                  style: const TextStyle(
                       color: Colors.black,
                       fontSize: 13,
                       fontWeight: FontWeight.w600),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
-                Text(
+                const Text(
                   'Accessibility',
                   style: TextStyle(
                       color: Colors.grey,
                       fontSize: 15,
                       fontWeight: FontWeight.w600),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
                   child: Row(
-                    children: [
-                      Container(
-                        height: 28,
-                        width: 180,
-                        decoration: BoxDecoration(
-                            color: colors.lightGreen,
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Center(
-                          child: Text(
-                            'Wheelchair accessibility',
-                            style: TextStyle(
-                                color: colors.secondary,
+                    children: accessibilityList.map((name) {
+                      return Padding(
+                        padding:
+                            const EdgeInsets.all(5), // Space between containers
+                        child: Container(
+                          height: 35,
+                          width: 180,
+                          decoration: BoxDecoration(
+                            color: Colors.lightGreen,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          child: Center(
+                            child: Text(
+                              name,
+                              style: const TextStyle(
+                                color: Colors.white,
                                 fontSize: 13,
-                                fontWeight: FontWeight.w600),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(
-                        width: 10,
-                      ),
-                      Container(
-                        height: 28,
-                        width: 110,
-                        decoration: BoxDecoration(
-                            color: colors.lightGreen,
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Center(
-                          child: Text(
-                            'Hearing loops',
-                            style: TextStyle(
-                                color: colors.secondary,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 12,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: Container(
-                    height: 28,
-                    width: 160,
-                    decoration: BoxDecoration(
-                        color: colors.lightGreen,
-                        borderRadius: BorderRadius.circular(5)),
-                    child: Center(
-                      child: Text(
-                        'Accessible restrooms',
-                        style: TextStyle(
-                            color: colors.secondary,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600),
-                      ),
-                    ),
+                      );
+                    }).toList(),
                   ),
                 ),
               ],
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       "Review and Rating",
                       style:
                           TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                     ),
-                    Row(
-                      children: [
-                        SizedBox(width: 8),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 3.0),
-                          child: Text(
-                            "(620)",
-                            style: TextStyle(color: Colors.grey),
+                    reviewModel?.totalCount == null ||
+                            reviewModel?.totalCount == ""
+                        ? const Center(
+                            child: Text(
+                            "00",
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600, fontSize: 16),
+                          ))
+                        : Row(
+                            children: [
+                              // SizedBox(width: 8),
+                              Text(
+                                " (${reviewModel?.totalCount})",
+                                style: const TextStyle(
+                                    fontWeight: FontWeight.w600, fontSize: 16),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
-                    ),
                   ],
                 ),
               ],
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: 10,
-              itemBuilder: (context, index) {
-                return Column(
-                  children: [
-                    Container(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
+          reviewModel?.data.isEmpty == true ||
+                  reviewModel?.data.length == null ||
+                  reviewModel?.data.length == ""
+              ? const Center(
+                  child: Text("No Review Here",
+                      style: TextStyle(fontWeight: FontWeight.w600)))
+              : Expanded(
+                  child: ListView.builder(
+                    itemCount: reviewModel?.data.length ?? 0,
+                    itemBuilder: (context, index) {
+                      return Column(
                         children: [
-                          Row(
-                            children: [
-                              Container(
-                                height: 48,
-                                width: 48,
-                                decoration: BoxDecoration(
-                                    color: Colors.grey,
-                                    borderRadius: BorderRadius.circular(4)),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(4),
-                                  child: Image.asset(
-                                    'assets/images/user.png',
-                                    fit: BoxFit.cover,
-                                  ),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      height: 48,
+                                      width: 48,
+                                      decoration: BoxDecoration(
+                                          color: Colors.grey,
+                                          borderRadius:
+                                              BorderRadius.circular(4)),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(4),
+                                        child: Image.network(
+                                          'https://developmentalphawizz.com/divyango_new/uploads/profile_pics/${reviewModel?.data[index].profilePic}',
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          "${reviewModel?.data[index].username}",
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                        Row(
+                                          children: [
+                                            Image.asset(
+                                              'assets/images/accessible.png',
+                                              height: 20,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              "${reviewModel?.data[index].revText}",
+                                              style: const TextStyle(
+                                                  color: colors.secondary),
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
-                              ),
-                              SizedBox(width: 8),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Jane Cooper",
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold),
-                                  ),
-                                  Row(
-                                    children: [
-                                      Image.asset(
-                                        'assets/images/accessible.png',
-                                        height: 20,
-                                      ),
-                                      SizedBox(width: 4),
-                                      Text(
-                                        "Accessible",
-                                        style:
-                                            TextStyle(color: colors.secondary),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
+                                Text(
+                                  "${reviewModel?.data[index].createdAt}"
+                                      .replaceAll(".000", ""),
+                                  style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                      fontWeight: FontWeight.w600),
+                                )
+                              ],
+                            ),
                           ),
-                          Text(
-                            "25/6/2024",
-                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          Divider(
+                            color: colors.greyTemp,
                           )
                         ],
-                      ),
-                    ),
-                    Divider(
-                      color: colors.greyTemp,
-                    )
-                  ],
-                );
-              },
-            ),
-          )
+                      );
+                    },
+                  ),
+                )
         ],
       ),
     );
@@ -404,19 +360,20 @@ class _LeadsScreenState extends State<LeadsScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Image.asset("assets/images/delete.png", height: 50),
-          content: Text(
+          content: const Text(
             "    Are you sure you want to\n                    delete?",
             style: TextStyle(fontSize: 16),
           ),
           actions: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,  // Ensure buttons are evenly spaced
+              mainAxisAlignment: MainAxisAlignment
+                  .spaceEvenly, // Ensure buttons are evenly spaced
               children: [
                 Container(
                   padding: EdgeInsets.zero,
                   child: TextButton(
                     style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,  // Remove internal padding
+                      padding: EdgeInsets.zero, // Remove internal padding
                     ),
                     child: Container(
                       height: 43,
@@ -427,7 +384,8 @@ class _LeadsScreenState extends State<LeadsScreen> {
                         border: Border.all(color: Colors.black),
                       ),
                       child: Center(
-                        child: Text("Cancel", style: TextStyle(color: Colors.black)),
+                        child: Text("Cancel",
+                            style: TextStyle(color: Colors.black)),
                       ),
                     ),
                     onPressed: () {
@@ -439,17 +397,19 @@ class _LeadsScreenState extends State<LeadsScreen> {
                   padding: EdgeInsets.zero,
                   child: TextButton(
                     style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,  // Remove internal padding
+                      padding: EdgeInsets.zero, // Remove internal padding
                     ),
                     child: Container(
                       height: 43,
                       width: 99,
                       decoration: BoxDecoration(
-                        color: colors.primary,  // Replace with your primary color
+                        color:
+                            colors.primary, // Replace with your primary color
                         borderRadius: BorderRadius.circular(7),
                       ),
                       child: Center(
-                        child: Text("Delete", style: TextStyle(color: Colors.white)),
+                        child: Text("Delete",
+                            style: TextStyle(color: Colors.white)),
                       ),
                     ),
                     onPressed: () {
@@ -469,5 +429,4 @@ class _LeadsScreenState extends State<LeadsScreen> {
       },
     );
   }
-
 }

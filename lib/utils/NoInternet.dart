@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/colors.dart';
 
 class NoInternetScreen extends StatelessWidget {
-  const NoInternetScreen({super.key});
+  const NoInternetScreen({Key,key});
 
   @override
   Widget build(BuildContext context) {

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
 import '../../services/btnPage.dart';
 import '../../services/colors.dart';
 
 class RegistrationSuccessWidget extends StatefulWidget {
-  const RegistrationSuccessWidget({super.key});
+  const RegistrationSuccessWidget({Key, key});
 
   @override
   State<RegistrationSuccessWidget> createState() =>
@@ -45,7 +44,7 @@ class _RegistrationSuccessWidgetState extends State<RegistrationSuccessWidget> {
                           ],
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(15)),
-                      child: Column(
+                      child: const Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           Text(

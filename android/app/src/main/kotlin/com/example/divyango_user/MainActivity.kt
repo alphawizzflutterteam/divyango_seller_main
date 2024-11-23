@@ -1,4 +1,4 @@
-package com.example.divyango_user
+package com.divyango.seller
 
 import io.flutter.embedding.android.FlutterActivity
 

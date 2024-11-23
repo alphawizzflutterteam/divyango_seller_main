@@ -1,29 +1,26 @@
 import 'dart:convert';
-import 'package:divyango_user/screens/TermsAndCondition.dart';
+
 import 'package:divyango_user/screens/auth/otp_page.dart';
-import 'package:divyango_user/screens/homepage/navigation_page.dart';
-import 'package:divyango_user/screens/homepage/persistance_nav_bar.dart';
 import 'package:divyango_user/services/colors.dart';
 import 'package:divyango_user/utils/Api.path.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../PrivacyPolicy.dart';
+
+import '../homepage/navigation_page.dart';
 import 'MySingUp.dart';
-import 'Signup.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({Key, key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  int? otp;
+  String? otp;
   String? mobile;
   bool isLoading = false;
   String? _selectedPro = 'Facebook';
@@ -177,8 +174,8 @@ class _LoginPageState extends State<LoginPage> {
                             validator: (value) {
                               if (value!.isEmpty) {
                                 return 'Please enter a mobile number';
-                              } else if (value!.length < 10 ||
-                                  value!.length > 10) {
+                              } else if (value.length < 10 ||
+                                  value.length > 10) {
                                 return 'Please enter valid mobile number';
                               }
                               return null;
@@ -278,15 +275,7 @@ class _LoginPageState extends State<LoginPage> {
                           setState(() {
                             isLoading = true;
                           });
-                          _loginType == 'phone'
-                              ? login()
-                              : Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          // const PersistanceNavBarWidget()),
-                                          const NavigationPage()),
-                                );
+                          _loginType == 'phone' ? login() : loginEmail();
                         }
                       },
                       child: Container(
@@ -431,37 +420,94 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   login() async {
+    setState(() {
+      isLoading = true;
+    });
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var request =
         http.MultipartRequest('POST', Uri.parse(ApiServicves.sendOtp));
-    request.fields
-        .addAll({'pro_type': '$_selectedPro', 'mobile': mobileController.text});
+    request.fields.addAll({'mobile': mobileController.text});
     print('login para ${request.fields}');
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       var result = await response.stream.bytesToString();
       var finalResult = jsonDecode(result);
-      if (finalResult['status'] == true) {
+      if (finalResult['response_code'] == '1') {
         print("working=========");
         otp = finalResult["otp"];
-        proType = finalResult["pro_type"];
-        await prefs.setString('proTypes', finalResult["pro_type"].toString());
         setState(() {});
         print("otp is $otp $proType");
         Fluttertoast.showToast(msg: '${finalResult['message']}');
         mobile = mobileController.text.toString();
         Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => Verification(
-                    OTP: otp.toString(),
-                    MOBILE: mobile.toString(),
-                    ProType: proType.toString())));
+          context,
+          MaterialPageRoute(
+            builder: (context) => Verification(
+              OTP: otp.toString(),
+              MOBILE: mobile.toString(),
+            ),
+          ),
+        );
+        setState(() {
+          isLoading = false;
+        });
         mobileController.clear();
       } else {
+        setState(() {
+          isLoading = false;
+        });
         Fluttertoast.showToast(msg: "${finalResult['message']}");
       }
     } else {
+      setState(() {
+        isLoading = false;
+      });
+
+      print(response.reasonPhrase);
+    }
+  }
+
+  loginEmail() async {
+    setState(() {
+      isLoading = true;
+    });
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var request =
+        http.MultipartRequest('POST', Uri.parse(ApiServicves.vendorlOgin));
+    request.fields.addAll(
+        {'email': emailController.text, 'password': passController.text});
+    print('login para ${request.fields}');
+    http.StreamedResponse response = await request.send();
+    if (response.statusCode == 200) {
+      var result = await response.stream.bytesToString();
+      var finalResult = jsonDecode(result);
+      if (finalResult['response_code'] == '1') {
+        print("working=========");
+        user_id = finalResult['user_id'];
+        user_mobile = finalResult['mobile'];
+        print("user id in verify otp $user_id $user_mobile");
+        await prefs.setString('user_id', finalResult['user_id'].toString());
+        await prefs.setString('mobile', user_mobile.toString());
+        setState(() {
+          isLoading = false;
+        });
+        Fluttertoast.showToast(msg: '${finalResult['message']}');
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                // builder: (context) => const PersistanceNavBarWidget()));
+                builder: (context) => const NavigationPage()));
+        mobileController.clear();
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        Fluttertoast.showToast(msg: "${finalResult['message']}");
+      }
+    } else {
+      setState(() {
+        isLoading = false;
+      });
       print(response.reasonPhrase);
     }
   }

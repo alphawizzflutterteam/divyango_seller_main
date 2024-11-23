@@ -5,7 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import '../../services/colors.dart';
 
 class SuccussScreen extends StatefulWidget {
-  const SuccussScreen({super.key});
+  const SuccussScreen({Key,key});
 
   @override
   State<SuccussScreen> createState() => _SuccussScreenState();

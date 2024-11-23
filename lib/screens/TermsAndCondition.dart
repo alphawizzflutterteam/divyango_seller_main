@@ -28,7 +28,7 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
     try {
       var request =
           http.MultipartRequest('POST', Uri.parse(ApiServicves.getpolicy));
-      request.fields.addAll({'slug': 'terms_ans_condition'});
+      request.fields.addAll({'slug': 'terms-conditions'});
       http.StreamedResponse response = await request.send();
       var json = jsonDecode(await response.stream.bytesToString());
       if (response.statusCode == 200) {
@@ -65,44 +65,48 @@ class _TermsAndConditionState extends State<TermsAndCondition> {
               fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
         ),
       ),
-      body: FutureBuilder(
-          future: myFuture,
-          builder: (context, snap) {
-            return snap.connectionState == ConnectionState.waiting
-                ? const Center(
-                    child: CircularProgressIndicator(
-                    backgroundColor: colors.primary,
-                  ))
-                : Container(
-                    padding: EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                    decoration: const BoxDecoration(
-                      // const BorderRadius.all(Radius.Radius),
-                      border: Border(
-                        top: BorderSide(
-                          //  BorderRadius.all(Radius.Radius),
-                          color: colors.primary,
-                          width: 1,
+      body: SingleChildScrollView(
+        child: FutureBuilder(
+            future: myFuture,
+            builder: (context, snap) {
+              return snap.connectionState == ConnectionState.waiting
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                      backgroundColor: colors.primary,
+                    ))
+                  : Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 0, vertical: 0),
+                      decoration: const BoxDecoration(
+                        // const BorderRadius.all(Radius.Radius),
+                        border: Border(
+                          top: BorderSide(
+                            //  BorderRadius.all(Radius.Radius),
+                            color: colors.primary,
+                            width: 1,
+                          ),
                         ),
                       ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          height: 1,
-                          color: Colors.grey,
-                          width: MediaQuery.of(context).size.width,
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                        Html(data: termsCondition?.data?.title.toString()),
-                        Html(
-                            data: termsCondition?.data?.description.toString()),
-                      ],
-                    ),
-                  );
-          }),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            height: 1,
+                            color: Colors.grey,
+                            width: MediaQuery.of(context).size.width,
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Html(data: termsCondition?.setting?.data.toString()),
+                          Html(
+                              data: termsCondition?.setting?.description
+                                  .toString()),
+                        ],
+                      ),
+                    );
+            }),
+      ),
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:divyango_user/screens/homepage/change_password.dart';
 import 'package:divyango_user/screens/homepage/my_profile.dart';
 import 'package:flutter/material.dart';
@@ -6,15 +7,17 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'package:persistent_bottom_nav_bar/persistent_tab_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../Model/GetProfileModel.dart';
 import '../../services/colors.dart';
 import '../../utils/Api.path.dart';
-import '../Edit Profile.dart';
 import '../Faq.dart';
 import '../PrivacyPolicy.dart';
 import '../TermsAndCondition.dart';
 import '../auth/mobile_login.dart';
 import '../notification.dart';
+import '../splash/BusinessDetails.dart';
+import 'MyPlans.dart';
 
 class ProfileWidget extends StatefulWidget {
   const ProfileWidget({Key? key}) : super(key: key);
@@ -43,32 +46,25 @@ class _ProfileWidgetState extends State<ProfileWidget> {
     final SharedPreferences sharedPreferences =
         await SharedPreferences.getInstance();
     String? user_id = sharedPreferences.getString('user_id');
-    String? proType = sharedPreferences.getString('proTypes');
     try {
       var request =
           http.MultipartRequest('POST', Uri.parse(ApiServicves.getProfile));
-      request.fields.addAll(
-          {'user_id': user_id.toString(), 'pro_type': proType.toString()});
+      request.fields.addAll({
+        'vid': user_id.toString(),
+      });
       print("profile para ${request.fields}");
       http.StreamedResponse response = await request.send();
       if (response.statusCode == 200) {
         var finalResponse = await response.stream.bytesToString();
         var result = jsonDecode(finalResponse);
-        if (result['status'] == true) {
+        if (result['response_code'] == '1') {
           getProfileModel = GetProfileModel.fromJson(result);
-          user_email = getProfileModel!.data!.cpEmail;
-          user_mobile = getProfileModel!.data!.cpMobile;
-          user_name = getProfileModel!.data!.cpName;
-          business_name = getProfileModel!.data!.projectName;
-          profileImage = getProfileModel!.data!.logo;
-          project_Code = result["project_code"];
-          is_Active = result["is_active"];
-          await sharedPreferences.setString(
-              'projectCode', result["project_code"].toString());
-          await sharedPreferences.setString(
-              'isActive', result["is_active"].toString());
+          user_email = getProfileModel?.user?.email;
+          user_mobile = getProfileModel?.user?.mobile;
+          user_name = getProfileModel?.user?.uname;
+          // profileImage = getProfileModel?.user?.profileImage;
           print(
-              "profile data $user_name 2 $user_mobile 3 $user_email 4 $project_Code 5 $is_Active");
+              "profile data $user_name 2 $user_mobile 3 $user_email image from ${getProfileModel?.user?.profileImage}");
           isLoading = false;
           setState(() {});
         }
@@ -90,24 +86,10 @@ class _ProfileWidgetState extends State<ProfileWidget> {
         backgroundColor: colors.secondary,
         leading: SizedBox(),
         leadingWidth: 0,
-        title: Row(
-          children: [
-            SvgPicture.asset('assets/images/mingcute_location-fill.svg'),
-            const SizedBox(width: 4),
-            const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Ward 35...",
-                  style: TextStyle(color: Colors.white, fontSize: 16),
-                ),
-                Text(
-                  "Ratna Lok Colony, Indore",
-                  style: TextStyle(color: Colors.white, fontSize: 12),
-                ),
-              ],
-            ),
-          ],
+        title: const Text(
+          "Profile",
+          style: TextStyle(
+              fontSize: 19, color: Colors.white, fontWeight: FontWeight.w500),
         ),
         actions: [
           InkWell(
@@ -128,9 +110,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
         children: [
           // profile card
           _profileCard(),
-
           const SizedBox(height: 10),
-
           // InkWell(
           //   onTap: () {
           //     Navigator.push(
@@ -169,7 +149,6 @@ class _ProfileWidgetState extends State<ProfileWidget> {
           //     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           //   ),
           // ),
-
 
           // // business detail
           // InkWell(
@@ -238,6 +217,26 @@ class _ProfileWidgetState extends State<ProfileWidget> {
           // privacy policy
           settingCard(
             svgImg: SvgPicture.asset('assets/images/Privacy policy.svg'),
+            title: 'Business Details',
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const BusinessDetails()));
+            },
+          ),
+
+          settingCard(
+            svgImg: SvgPicture.asset('assets/images/Privacy policy.svg'),
+            title: 'My Plans',
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => const MyPlans()));
+            },
+          ),
+
+          settingCard(
+            svgImg: SvgPicture.asset('assets/images/Privacy policy.svg'),
             title: 'Privacy Policy',
             onTap: () {
               Navigator.push(
@@ -270,7 +269,6 @@ class _ProfileWidgetState extends State<ProfileWidget> {
               );
             },
           ),
-
           // change password
           settingCard(
             svgImg: SvgPicture.asset('assets/images/Change Password.svg'),
@@ -295,7 +293,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                 children: [
                   SvgPicture.asset('assets/images/Logout.svg'),
                   SizedBox(width: 8),
-                  Text(
+                  const Text(
                     'Logout',
                     style: TextStyle(color: colors.red, fontSize: 14),
                   ),
@@ -334,7 +332,8 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                           borderRadius: BorderRadius.circular(8),
                           //color: Colors.blue,
                           image: DecorationImage(
-                              image: NetworkImage(profileImage.toString()),
+                              image: NetworkImage(
+                                  "${getProfileModel?.user?.profileImage}"),
                               fit: BoxFit.cover),
                         ),
                       ),
@@ -348,7 +347,7 @@ class _ProfileWidgetState extends State<ProfileWidget> {
                           const SizedBox(
                             height: 10,
                           ),
-                          business_name == null || business_name == ""
+                          user_name == null || user_name == ""
                               ? const Text(
                                   "User Name",
                                   style: TextStyle(
@@ -524,7 +523,8 @@ class settingCard extends StatelessWidget {
   void Function() onTap;
 
   settingCard(
-      {super.key,
+      {Key,
+      key,
       required this.svgImg,
       required this.title,
       required this.onTap});

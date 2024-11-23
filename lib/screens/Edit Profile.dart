@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:divyango_user/screens/homepage/navigation_page.dart';
+import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,7 +13,6 @@ import '../services/btnPage.dart';
 import '../services/colors.dart';
 import '../utils/Api.path.dart';
 import 'homepage/my_profile.dart';
-import 'homepage/persistance_nav_bar.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
@@ -36,27 +36,24 @@ class _EditProfileState extends State<EditProfile> {
       isLoading = true;
     });
     final SharedPreferences sharedPreferences =
-    await SharedPreferences.getInstance();
+        await SharedPreferences.getInstance();
     String? user_id = sharedPreferences.getString('user_id');
-    String? proType = sharedPreferences.getString('proTypes');
     try {
       var request =
-      http.MultipartRequest('POST', Uri.parse(ApiServicves.getProfile));
-      request.fields.addAll(
-          {'user_id': user_id.toString(), 'pro_type': proType.toString()});
+          http.MultipartRequest('POST', Uri.parse(ApiServicves.getProfile));
+      request.fields.addAll({
+        'vid': user_id.toString(),
+      });
       print("profile para ${request.fields}");
       http.StreamedResponse response = await request.send();
       if (response.statusCode == 200) {
         var finalResponse = await response.stream.bytesToString();
         var result = jsonDecode(finalResponse);
-        if (result['status'] == true) {
+        if (result['response_code'] == '1') {
           getProfileModel = GetProfileModel.fromJson(result);
-          emailController.text = getProfileModel!.data!.cpEmail ?? "";
-          mobileController.text = getProfileModel!.data!.cpMobile ?? "";
-          nameController.text = getProfileModel!.data!.cpName ?? "";
-          projectNameController.text = getProfileModel!.data!.projectName ?? "";
-          gstNameController.text = getProfileModel!.data!.gstName ?? "";
-          gstNoCTr.text = getProfileModel!.data!.gstNo ?? "";
+          emailController.text = getProfileModel?.user?.email ?? "";
+          mobileController.text = getProfileModel?.user?.mobile ?? "";
+          nameController.text = getProfileModel?.user?.uname ?? "";
           // _image = getProfileModel!.data!.logo;
           print("profile data $user_name 2 $user_mobile 3 $user_email");
           isLoading = false;
@@ -78,11 +75,11 @@ class _EditProfileState extends State<EditProfile> {
       isLoading = true;
     });
     final SharedPreferences sharedPreferences =
-    await SharedPreferences.getInstance();
+        await SharedPreferences.getInstance();
     String? user_id = sharedPreferences.getString('user_id');
     String? proType = sharedPreferences.getString('proTypes');
     var request =
-    http.MultipartRequest('POST', Uri.parse(ApiServicves.updateProfile));
+        http.MultipartRequest('POST', Uri.parse(ApiServicves.updateProfile));
     request.fields.addAll({
       'id': user_id.toString(),
       'name': nameController.text,
@@ -101,7 +98,8 @@ class _EditProfileState extends State<EditProfile> {
       var result = jsonDecode(finalResponse);
       if (result['status'] == true) {
         Fluttertoast.showToast(msg: '${result['message']}');
-        Navigator.push(context,
+        Navigator.push(
+            context,
             // MaterialPageRoute(builder: (context) => PersistanceNavBarWidget()));
             MaterialPageRoute(builder: (context) => NavigationPage()));
       } else {
@@ -329,14 +327,13 @@ class _EditProfileState extends State<EditProfile> {
               TextFormField(
                 controller: mobileController,
                 keyboardType: TextInputType.phone,
-               // maxLength: 40,
+                // maxLength: 40,
                 decoration: InputDecoration(
                   filled: true,
                   isDense: true,
                   fillColor: colors.txtField,
-
                   hintText: 'Personal Mobile Number',
-                  hintStyle: TextStyle(color: colors.fieldTxt),
+                  hintStyle: const TextStyle(color: colors.fieldTxt),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                     borderSide: BorderSide.none,
@@ -449,9 +446,7 @@ class _EditProfileState extends State<EditProfile> {
                 },
               ),
 
-              const SizedBox(
-                  height: 13
-              ),
+              const SizedBox(height: 13),
 
               // UDID Field
               TextFormField(
@@ -557,7 +552,6 @@ class _EditProfileState extends State<EditProfile> {
               //     return null;
               //   },
               // ),
-
 
               // // image section
               // InkWell(

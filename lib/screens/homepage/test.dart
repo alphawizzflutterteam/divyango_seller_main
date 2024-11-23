@@ -1,13 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_svg/svg.dart';
+
 import '../../services/colors.dart';
 import '../notification.dart';
 import 'leadsdetails.dart';
 
 class LeadsWidget extends StatefulWidget {
-  const LeadsWidget({super.key});
+  const LeadsWidget({Key, key});
 
   @override
   State<LeadsWidget> createState() => _LeadsWidgetState();
@@ -207,8 +207,7 @@ class _LeadsWidgetState extends State<LeadsWidget> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (context) => const LeadsScreen()),
+                    MaterialPageRoute(builder: (context) => LeadsScreen()),
                   );
                 },
                 child: Container(

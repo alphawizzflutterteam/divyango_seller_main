@@ -5,7 +5,7 @@ import '../services/AppBtn.dart';
 import '../services/colors.dart';
 
 class IntroSlider extends StatefulWidget {
-  const IntroSlider({super.key});
+  const IntroSlider({Key,key});
 
   @override
   _GettingStartedScreenState createState() => _GettingStartedScreenState();

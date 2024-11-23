@@ -1,264 +1,408 @@
-/// status : true
-/// message : "Success"
-/// data : {"id":548,"lead_id":0,"project_name":"Digi","project_code":null,"project_short_name":null,"address":"indore vijay nagar","cp_name":"Shivani","cp_email":"Shivani@gmail.com","cp_mobile":"8097000800","gst_no":"stet36457767778","gst_name":"Testesaes","tan_no":null,"gst_percentage":0,"service_charge_incl_gst":0,"logo":"https://dberp.developmentalphawizz.com/public/files/project-logo/651.png","city":"6","is_active":2,"password":null,"a_id":2,"delete":0,"otp":4784,"created_at":"2024-06-13 11:21:30","updated_at":"2024-06-13 12:44:18"}
+/// response_code : "1"
+/// message : "Vendor Found"
+/// user : {"country":null,"state":null,"id":"370","fname":"","lname":"","email":"divyanshdewda2003@gmail.com","confirm_password":"12345678","bussiness_name":"test bussiness123","type_of_bussiness":"test bussiness type","bussiness_contact":"8547896541","country_code":null,"mobile":"9874563212","address":"test address123","country_id":null,"state_id":"0","city_id":null,"dob":null,"category_id":null,"subcategory_id":null,"postal_code":null,"payment_details":null,"lat":"0","lang":"0","uname":"testalphaji","password":"$2y$10$JQ0YW7qsFerIleD.KwroFeaZ1iDnU04xC6mq/oSWfOrrMK6HIvY5y","profile_image":"","device_token":"","otp":"4282","facebook_id":null,"type":null,"status":"0","wallet":"0.00","balance":"0.00","json_data":null,"last_login":null,"created_at":"2024-11-18 16:20:28","updated_at":"2024-11-18 18:49:27"}
+/// active_plan : "0"
+/// status : "success"
 
 class GetProfileModel {
   GetProfileModel({
-      bool? status, 
-      String? message,
-    ProfileData? data,}){
-    _status = status;
+      String? responseCode, 
+      String? message, 
+      User? user, 
+      String? activePlan, 
+      String? status,}){
+    _responseCode = responseCode;
     _message = message;
-    _data = data;
+    _user = user;
+    _activePlan = activePlan;
+    _status = status;
 }
 
   GetProfileModel.fromJson(dynamic json) {
-    _status = json['status'];
+    _responseCode = json['response_code'];
     _message = json['message'];
-    _data = json['data'] != null ? ProfileData.fromJson(json['data']) : null;
+    _user = json['user'] != null ? User.fromJson(json['user']) : null;
+    _activePlan = json['active_plan'];
+    _status = json['status'];
   }
-  bool? _status;
+  String? _responseCode;
   String? _message;
-  ProfileData? _data;
-GetProfileModel copyWith({  bool? status,
+  User? _user;
+  String? _activePlan;
+  String? _status;
+GetProfileModel copyWith({  String? responseCode,
   String? message,
-  ProfileData? data,
-}) => GetProfileModel(  status: status ?? _status,
+  User? user,
+  String? activePlan,
+  String? status,
+}) => GetProfileModel(  responseCode: responseCode ?? _responseCode,
   message: message ?? _message,
-  data: data ?? _data,
+  user: user ?? _user,
+  activePlan: activePlan ?? _activePlan,
+  status: status ?? _status,
 );
-  bool? get status => _status;
+  String? get responseCode => _responseCode;
   String? get message => _message;
-  ProfileData? get data => _data;
+  User? get user => _user;
+  String? get activePlan => _activePlan;
+  String? get status => _status;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    map['status'] = _status;
+    map['response_code'] = _responseCode;
     map['message'] = _message;
-    if (_data != null) {
-      map['data'] = _data?.toJson();
+    if (_user != null) {
+      map['user'] = _user?.toJson();
     }
+    map['active_plan'] = _activePlan;
+    map['status'] = _status;
     return map;
   }
 
 }
 
-/// id : 548
-/// lead_id : 0
-/// project_name : "Digi"
-/// project_code : null
-/// project_short_name : null
-/// address : "indore vijay nagar"
-/// cp_name : "Shivani"
-/// cp_email : "Shivani@gmail.com"
-/// cp_mobile : "8097000800"
-/// gst_no : "stet36457767778"
-/// gst_name : "Testesaes"
-/// tan_no : null
-/// gst_percentage : 0
-/// service_charge_incl_gst : 0
-/// logo : "https://dberp.developmentalphawizz.com/public/files/project-logo/651.png"
-/// city : "6"
-/// is_active : 2
-/// password : null
-/// a_id : 2
-/// delete : 0
-/// otp : 4784
-/// created_at : "2024-06-13 11:21:30"
-/// updated_at : "2024-06-13 12:44:18"
+/// country : null
+/// state : null
+/// id : "370"
+/// fname : ""
+/// lname : ""
+/// email : "divyanshdewda2003@gmail.com"
+/// confirm_password : "12345678"
+/// bussiness_name : "test bussiness123"
+/// type_of_bussiness : "test bussiness type"
+/// bussiness_contact : "8547896541"
+/// country_code : null
+/// mobile : "9874563212"
+/// address : "test address123"
+/// country_id : null
+/// state_id : "0"
+/// city_id : null
+/// dob : null
+/// category_id : null
+/// subcategory_id : null
+/// postal_code : null
+/// payment_details : null
+/// lat : "0"
+/// lang : "0"
+/// uname : "testalphaji"
+/// password : "$2y$10$JQ0YW7qsFerIleD.KwroFeaZ1iDnU04xC6mq/oSWfOrrMK6HIvY5y"
+/// profile_image : ""
+/// device_token : ""
+/// otp : "4282"
+/// facebook_id : null
+/// type : null
+/// status : "0"
+/// wallet : "0.00"
+/// balance : "0.00"
+/// json_data : null
+/// last_login : null
+/// created_at : "2024-11-18 16:20:28"
+/// updated_at : "2024-11-18 18:49:27"
 
-class ProfileData {
-  ProfileData({
-      num? id, 
-      num? leadId, 
-      String? projectName, 
-      dynamic projectCode, 
-      dynamic projectShortName, 
+class User {
+  User({
+      dynamic country, 
+      dynamic state, 
+      String? id, 
+      String? fname, 
+      String? lname, 
+      String? email, 
+      String? confirmPassword, 
+      String? bussinessName, 
+      String? typeOfBussiness, 
+      String? bussinessContact, 
+      dynamic countryCode, 
+      String? mobile, 
       String? address, 
-      String? cpName, 
-      String? cpEmail, 
-      String? cpMobile, 
-      String? gstNo, 
-      String? gstName, 
-      dynamic tanNo, 
-      num? gstPercentage, 
-      num? serviceChargeInclGst, 
-      String? logo, 
-      String? city, 
-      num? isActive, 
-      dynamic password, 
-      num? aId, 
-      num? delete, 
-      num? otp, 
+      dynamic countryId, 
+      String? stateId, 
+      dynamic cityId, 
+      dynamic dob, 
+      dynamic categoryId, 
+      dynamic subcategoryId, 
+      dynamic postalCode, 
+      dynamic paymentDetails, 
+      String? lat, 
+      String? lang, 
+      String? uname, 
+      String? password, 
+      String? profileImage, 
+      String? deviceToken, 
+      String? otp, 
+      dynamic facebookId, 
+      dynamic type, 
+      String? status, 
+      String? wallet, 
+      String? balance, 
+      dynamic jsonData, 
+      dynamic lastLogin, 
       String? createdAt, 
       String? updatedAt,}){
+    _country = country;
+    _state = state;
     _id = id;
-    _leadId = leadId;
-    _projectName = projectName;
-    _projectCode = projectCode;
-    _projectShortName = projectShortName;
+    _fname = fname;
+    _lname = lname;
+    _email = email;
+    _confirmPassword = confirmPassword;
+    _bussinessName = bussinessName;
+    _typeOfBussiness = typeOfBussiness;
+    _bussinessContact = bussinessContact;
+    _countryCode = countryCode;
+    _mobile = mobile;
     _address = address;
-    _cpName = cpName;
-    _cpEmail = cpEmail;
-    _cpMobile = cpMobile;
-    _gstNo = gstNo;
-    _gstName = gstName;
-    _tanNo = tanNo;
-    _gstPercentage = gstPercentage;
-    _serviceChargeInclGst = serviceChargeInclGst;
-    _logo = logo;
-    _city = city;
-    _isActive = isActive;
+    _countryId = countryId;
+    _stateId = stateId;
+    _cityId = cityId;
+    _dob = dob;
+    _categoryId = categoryId;
+    _subcategoryId = subcategoryId;
+    _postalCode = postalCode;
+    _paymentDetails = paymentDetails;
+    _lat = lat;
+    _lang = lang;
+    _uname = uname;
     _password = password;
-    _aId = aId;
-    _delete = delete;
+    _profileImage = profileImage;
+    _deviceToken = deviceToken;
     _otp = otp;
+    _facebookId = facebookId;
+    _type = type;
+    _status = status;
+    _wallet = wallet;
+    _balance = balance;
+    _jsonData = jsonData;
+    _lastLogin = lastLogin;
     _createdAt = createdAt;
     _updatedAt = updatedAt;
 }
 
-  ProfileData.fromJson(dynamic json) {
+  User.fromJson(dynamic json) {
+    _country = json['country'];
+    _state = json['state'];
     _id = json['id'];
-    _leadId = json['lead_id'];
-    _projectName = json['project_name'];
-    _projectCode = json['project_code'];
-    _projectShortName = json['project_short_name'];
+    _fname = json['fname'];
+    _lname = json['lname'];
+    _email = json['email'];
+    _confirmPassword = json['confirm_password'];
+    _bussinessName = json['bussiness_name'];
+    _typeOfBussiness = json['type_of_bussiness'];
+    _bussinessContact = json['bussiness_contact'];
+    _countryCode = json['country_code'];
+    _mobile = json['mobile'];
     _address = json['address'];
-    _cpName = json['cp_name'];
-    _cpEmail = json['cp_email'];
-    _cpMobile = json['cp_mobile'];
-    _gstNo = json['gst_no'];
-    _gstName = json['gst_name'];
-    _tanNo = json['tan_no'];
-    _gstPercentage = json['gst_percentage'];
-    _serviceChargeInclGst = json['service_charge_incl_gst'];
-    _logo = json['logo'];
-    _city = json['city'];
-    _isActive = json['is_active'];
+    _countryId = json['country_id'];
+    _stateId = json['state_id'];
+    _cityId = json['city_id'];
+    _dob = json['dob'];
+    _categoryId = json['category_id'];
+    _subcategoryId = json['subcategory_id'];
+    _postalCode = json['postal_code'];
+    _paymentDetails = json['payment_details'];
+    _lat = json['lat'];
+    _lang = json['lang'];
+    _uname = json['uname'];
     _password = json['password'];
-    _aId = json['a_id'];
-    _delete = json['delete'];
+    _profileImage = json['profile_image'];
+    _deviceToken = json['device_token'];
     _otp = json['otp'];
+    _facebookId = json['facebook_id'];
+    _type = json['type'];
+    _status = json['status'];
+    _wallet = json['wallet'];
+    _balance = json['balance'];
+    _jsonData = json['json_data'];
+    _lastLogin = json['last_login'];
     _createdAt = json['created_at'];
     _updatedAt = json['updated_at'];
   }
-  num? _id;
-  num? _leadId;
-  String? _projectName;
-  dynamic _projectCode;
-  dynamic _projectShortName;
+  dynamic _country;
+  dynamic _state;
+  String? _id;
+  String? _fname;
+  String? _lname;
+  String? _email;
+  String? _confirmPassword;
+  String? _bussinessName;
+  String? _typeOfBussiness;
+  String? _bussinessContact;
+  dynamic _countryCode;
+  String? _mobile;
   String? _address;
-  String? _cpName;
-  String? _cpEmail;
-  String? _cpMobile;
-  String? _gstNo;
-  String? _gstName;
-  dynamic _tanNo;
-  num? _gstPercentage;
-  num? _serviceChargeInclGst;
-  String? _logo;
-  String? _city;
-  num? _isActive;
-  dynamic _password;
-  num? _aId;
-  num? _delete;
-  num? _otp;
+  dynamic _countryId;
+  String? _stateId;
+  dynamic _cityId;
+  dynamic _dob;
+  dynamic _categoryId;
+  dynamic _subcategoryId;
+  dynamic _postalCode;
+  dynamic _paymentDetails;
+  String? _lat;
+  String? _lang;
+  String? _uname;
+  String? _password;
+  String? _profileImage;
+  String? _deviceToken;
+  String? _otp;
+  dynamic _facebookId;
+  dynamic _type;
+  String? _status;
+  String? _wallet;
+  String? _balance;
+  dynamic _jsonData;
+  dynamic _lastLogin;
   String? _createdAt;
   String? _updatedAt;
-  ProfileData copyWith({  num? id,
-  num? leadId,
-  String? projectName,
-  dynamic projectCode,
-  dynamic projectShortName,
+User copyWith({  dynamic country,
+  dynamic state,
+  String? id,
+  String? fname,
+  String? lname,
+  String? email,
+  String? confirmPassword,
+  String? bussinessName,
+  String? typeOfBussiness,
+  String? bussinessContact,
+  dynamic countryCode,
+  String? mobile,
   String? address,
-  String? cpName,
-  String? cpEmail,
-  String? cpMobile,
-  String? gstNo,
-  String? gstName,
-  dynamic tanNo,
-  num? gstPercentage,
-  num? serviceChargeInclGst,
-  String? logo,
-  String? city,
-  num? isActive,
-  dynamic password,
-  num? aId,
-  num? delete,
-  num? otp,
+  dynamic countryId,
+  String? stateId,
+  dynamic cityId,
+  dynamic dob,
+  dynamic categoryId,
+  dynamic subcategoryId,
+  dynamic postalCode,
+  dynamic paymentDetails,
+  String? lat,
+  String? lang,
+  String? uname,
+  String? password,
+  String? profileImage,
+  String? deviceToken,
+  String? otp,
+  dynamic facebookId,
+  dynamic type,
+  String? status,
+  String? wallet,
+  String? balance,
+  dynamic jsonData,
+  dynamic lastLogin,
   String? createdAt,
   String? updatedAt,
-}) => ProfileData(  id: id ?? _id,
-  leadId: leadId ?? _leadId,
-  projectName: projectName ?? _projectName,
-  projectCode: projectCode ?? _projectCode,
-  projectShortName: projectShortName ?? _projectShortName,
+}) => User(  country: country ?? _country,
+  state: state ?? _state,
+  id: id ?? _id,
+  fname: fname ?? _fname,
+  lname: lname ?? _lname,
+  email: email ?? _email,
+  confirmPassword: confirmPassword ?? _confirmPassword,
+  bussinessName: bussinessName ?? _bussinessName,
+  typeOfBussiness: typeOfBussiness ?? _typeOfBussiness,
+  bussinessContact: bussinessContact ?? _bussinessContact,
+  countryCode: countryCode ?? _countryCode,
+  mobile: mobile ?? _mobile,
   address: address ?? _address,
-  cpName: cpName ?? _cpName,
-  cpEmail: cpEmail ?? _cpEmail,
-  cpMobile: cpMobile ?? _cpMobile,
-  gstNo: gstNo ?? _gstNo,
-  gstName: gstName ?? _gstName,
-  tanNo: tanNo ?? _tanNo,
-  gstPercentage: gstPercentage ?? _gstPercentage,
-  serviceChargeInclGst: serviceChargeInclGst ?? _serviceChargeInclGst,
-  logo: logo ?? _logo,
-  city: city ?? _city,
-  isActive: isActive ?? _isActive,
+  countryId: countryId ?? _countryId,
+  stateId: stateId ?? _stateId,
+  cityId: cityId ?? _cityId,
+  dob: dob ?? _dob,
+  categoryId: categoryId ?? _categoryId,
+  subcategoryId: subcategoryId ?? _subcategoryId,
+  postalCode: postalCode ?? _postalCode,
+  paymentDetails: paymentDetails ?? _paymentDetails,
+  lat: lat ?? _lat,
+  lang: lang ?? _lang,
+  uname: uname ?? _uname,
   password: password ?? _password,
-  aId: aId ?? _aId,
-  delete: delete ?? _delete,
+  profileImage: profileImage ?? _profileImage,
+  deviceToken: deviceToken ?? _deviceToken,
   otp: otp ?? _otp,
+  facebookId: facebookId ?? _facebookId,
+  type: type ?? _type,
+  status: status ?? _status,
+  wallet: wallet ?? _wallet,
+  balance: balance ?? _balance,
+  jsonData: jsonData ?? _jsonData,
+  lastLogin: lastLogin ?? _lastLogin,
   createdAt: createdAt ?? _createdAt,
   updatedAt: updatedAt ?? _updatedAt,
 );
-  num? get id => _id;
-  num? get leadId => _leadId;
-  String? get projectName => _projectName;
-  dynamic get projectCode => _projectCode;
-  dynamic get projectShortName => _projectShortName;
+  dynamic get country => _country;
+  dynamic get state => _state;
+  String? get id => _id;
+  String? get fname => _fname;
+  String? get lname => _lname;
+  String? get email => _email;
+  String? get confirmPassword => _confirmPassword;
+  String? get bussinessName => _bussinessName;
+  String? get typeOfBussiness => _typeOfBussiness;
+  String? get bussinessContact => _bussinessContact;
+  dynamic get countryCode => _countryCode;
+  String? get mobile => _mobile;
   String? get address => _address;
-  String? get cpName => _cpName;
-  String? get cpEmail => _cpEmail;
-  String? get cpMobile => _cpMobile;
-  String? get gstNo => _gstNo;
-  String? get gstName => _gstName;
-  dynamic get tanNo => _tanNo;
-  num? get gstPercentage => _gstPercentage;
-  num? get serviceChargeInclGst => _serviceChargeInclGst;
-  String? get logo => _logo;
-  String? get city => _city;
-  num? get isActive => _isActive;
-  dynamic get password => _password;
-  num? get aId => _aId;
-  num? get delete => _delete;
-  num? get otp => _otp;
+  dynamic get countryId => _countryId;
+  String? get stateId => _stateId;
+  dynamic get cityId => _cityId;
+  dynamic get dob => _dob;
+  dynamic get categoryId => _categoryId;
+  dynamic get subcategoryId => _subcategoryId;
+  dynamic get postalCode => _postalCode;
+  dynamic get paymentDetails => _paymentDetails;
+  String? get lat => _lat;
+  String? get lang => _lang;
+  String? get uname => _uname;
+  String? get password => _password;
+  String? get profileImage => _profileImage;
+  String? get deviceToken => _deviceToken;
+  String? get otp => _otp;
+  dynamic get facebookId => _facebookId;
+  dynamic get type => _type;
+  String? get status => _status;
+  String? get wallet => _wallet;
+  String? get balance => _balance;
+  dynamic get jsonData => _jsonData;
+  dynamic get lastLogin => _lastLogin;
   String? get createdAt => _createdAt;
   String? get updatedAt => _updatedAt;
 
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
+    map['country'] = _country;
+    map['state'] = _state;
     map['id'] = _id;
-    map['lead_id'] = _leadId;
-    map['project_name'] = _projectName;
-    map['project_code'] = _projectCode;
-    map['project_short_name'] = _projectShortName;
+    map['fname'] = _fname;
+    map['lname'] = _lname;
+    map['email'] = _email;
+    map['confirm_password'] = _confirmPassword;
+    map['bussiness_name'] = _bussinessName;
+    map['type_of_bussiness'] = _typeOfBussiness;
+    map['bussiness_contact'] = _bussinessContact;
+    map['country_code'] = _countryCode;
+    map['mobile'] = _mobile;
     map['address'] = _address;
-    map['cp_name'] = _cpName;
-    map['cp_email'] = _cpEmail;
-    map['cp_mobile'] = _cpMobile;
-    map['gst_no'] = _gstNo;
-    map['gst_name'] = _gstName;
-    map['tan_no'] = _tanNo;
-    map['gst_percentage'] = _gstPercentage;
-    map['service_charge_incl_gst'] = _serviceChargeInclGst;
-    map['logo'] = _logo;
-    map['city'] = _city;
-    map['is_active'] = _isActive;
+    map['country_id'] = _countryId;
+    map['state_id'] = _stateId;
+    map['city_id'] = _cityId;
+    map['dob'] = _dob;
+    map['category_id'] = _categoryId;
+    map['subcategory_id'] = _subcategoryId;
+    map['postal_code'] = _postalCode;
+    map['payment_details'] = _paymentDetails;
+    map['lat'] = _lat;
+    map['lang'] = _lang;
+    map['uname'] = _uname;
     map['password'] = _password;
-    map['a_id'] = _aId;
-    map['delete'] = _delete;
+    map['profile_image'] = _profileImage;
+    map['device_token'] = _deviceToken;
     map['otp'] = _otp;
+    map['facebook_id'] = _facebookId;
+    map['type'] = _type;
+    map['status'] = _status;
+    map['wallet'] = _wallet;
+    map['balance'] = _balance;
+    map['json_data'] = _jsonData;
+    map['last_login'] = _lastLogin;
     map['created_at'] = _createdAt;
     map['updated_at'] = _updatedAt;
     return map;

@@ -6,7 +6,7 @@ import 'Payment.dart';
 import 'Payment1.dart';
 
 class PaymentType extends StatefulWidget {
-  const PaymentType({super.key});
+  const PaymentType({Key,key});
 
   @override
   State<PaymentType> createState() => _PaymentTypeState();

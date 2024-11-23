@@ -6,7 +6,7 @@ import '../../services/colors.dart';
 import 'leads.dart';
 
 class PersistanceNavBarWidget extends StatefulWidget {
-  const PersistanceNavBarWidget({super.key});
+  const PersistanceNavBarWidget({Key,key});
 
   @override
   State<PersistanceNavBarWidget> createState() =>
