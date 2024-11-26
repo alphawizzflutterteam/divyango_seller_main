@@ -44,8 +44,8 @@ class _EditVenueDetailState extends State<EditVenueDetail> {
     addresCtr.text = widget.model?.address ?? "";
     startTimeCtr.text = widget.model?.startTime ?? "";
     endTimeCtr.text = widget.model?.endTime ?? "";
-    _image = File(widget.model?.image.toString() ?? "");
-    print("mage is $_image sdasdd ${widget.model?.image.toString() ?? ""}");
+    // _image = File(widget.model?.image.toString() ?? "");
+    // print("mage is $_image sdasdd ${widget.model?.image.toString() ?? ""}");
     fetchCategories();
     getAccessibility();
   }
