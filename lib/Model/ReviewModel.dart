@@ -15,6 +15,9 @@ class ReviewModel {
   String status;
   List<ReviewData> data;
   String totalCount;
+  int accessiblePercentage;
+  int partiallyAccessiblePercentage;
+  int notAccessiblePercentage;
 
   ReviewModel({
     required this.responseCode,
@@ -22,6 +25,9 @@ class ReviewModel {
     required this.status,
     required this.data,
     required this.totalCount,
+    required this.accessiblePercentage,
+    required this.notAccessiblePercentage,
+    required this.partiallyAccessiblePercentage
   });
 
   factory ReviewModel.fromJson(Map<String, dynamic> json) => ReviewModel(
@@ -31,6 +37,9 @@ class ReviewModel {
         data: List<ReviewData>.from(
             json["data"].map((x) => ReviewData.fromJson(x))),
         totalCount: json["total_count"],
+        accessiblePercentage: json["accessible_percentage"],
+        partiallyAccessiblePercentage: json["partially_accessible_percentage"],
+        notAccessiblePercentage: json["not_accessible_percentage"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -39,6 +48,9 @@ class ReviewModel {
         "status": status,
         "data": List<dynamic>.from(data.map((x) => x.toJson())),
         "total_count": totalCount,
+        "partially_accessible_percentage": partiallyAccessiblePercentage,
+        "not_accessible_percentage": notAccessiblePercentage,
+        "accessible_percentage": accessiblePercentage,
       };
 }
 

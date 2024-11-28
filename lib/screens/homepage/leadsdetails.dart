@@ -4,6 +4,7 @@ import 'package:divyango_user/screens/venue.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 import '../../Model/ReviewModel.dart';
 import '../../Model/VenueListModel.dart';
@@ -39,6 +40,8 @@ class _LeadsScreenState extends State<LeadsScreen> {
     });
   }
 
+  final List<String> ratingType = ["Accessible", "Partially Accessible", "Not Accessible"];
+
   ReviewModel? reviewModel;
 
   review() async {
@@ -49,6 +52,7 @@ class _LeadsScreenState extends State<LeadsScreen> {
         http.MultipartRequest('POST', Uri.parse(ApiServicves.getReview));
     request.fields.addAll({'venue_id': widget.model!.id.toString()});
     request.headers.addAll(headers);
+    print(request.fields);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       var result = await response.stream.bytesToString();
@@ -59,6 +63,20 @@ class _LeadsScreenState extends State<LeadsScreen> {
     } else {
       print(response.reasonPhrase);
     }
+  }
+
+  convertDate(String? date){
+    String apiResponseDate = date.toString();
+
+    // Parse the string to a DateTime object
+    DateTime parsedDate = DateTime.parse(apiResponseDate);
+
+    // Format the DateTime to only display the date
+    String _formattedDate = DateFormat('yyyy-MM-dd').format(parsedDate);
+
+    return _formattedDate;
+
+    // print(_formattedDate); // Output: 2024-11-22
   }
 
   @override
@@ -76,280 +94,369 @@ class _LeadsScreenState extends State<LeadsScreen> {
           context: context,
           title: '                     Venue Detail',
           color: colors.whiteTemp1),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 100,
-                  width: 110,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      image: DecorationImage(
-                          image: NetworkImage(
-                              '${ApiServicves.imageUrl}${widget.model?.image}'),
-                          fit: BoxFit.cover)),
-                ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Text(
-                      '${widget.model?.name}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 100,
+                    width: 110,
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        image: DecorationImage(
+                            image: NetworkImage(
+                                '${ApiServicves.imageUrl}${widget.model?.image}'),
+                            fit: BoxFit.cover)),
+                  ),
+                  const SizedBox(
+                    width: 10,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      const SizedBox(
+                        height: 10,
                       ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.location_on_outlined,
-                          size: 20,
-                          color: Colors.grey,
+                      Text(
+                        '${widget.model?.name}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
-                        const SizedBox(
-                          width: 4,
-                        ),
-                        Container(
-                          width: 200,
-                          child: Text(
-                            '${widget.model?.address}',
-                            style: const TextStyle(
-                                color: Colors.grey, fontSize: 13),
-                            maxLines: 2,
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Row(
+                        children: [
+                          const Icon(
+                            Icons.location_on_outlined,
+                            size: 20,
+                            color: Colors.grey,
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Row(
-                      children: [
-                        const Icon(
-                          CupertinoIcons.phone,
-                          size: 20,
-                          color: Colors.grey,
-                        ),
-                        const SizedBox(
-                          width: 4,
-                        ),
-                        Text(
-                          '${widget.model?.mobile}',
-                          style: const TextStyle(color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Business hours',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 12),
-                const Text(
-                  'Start & End Time',
-                  style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600),
-                ),
-                Text(
-                  '${widget.model?.startTime} - ${widget.model?.endTime}',
-                  style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                const Text(
-                  'Accessibility',
-                  style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(
-                  height: 12,
-                ),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: accessibilityList.map((name) {
-                      return Padding(
-                        padding:
-                            const EdgeInsets.all(5), // Space between containers
-                        child: Container(
-                          height: 35,
-                          width: 180,
-                          decoration: BoxDecoration(
-                            color: Colors.lightGreen,
-                            borderRadius: BorderRadius.circular(5),
+                          const SizedBox(
+                            width: 4,
                           ),
-                          child: Center(
+                          Container(
+                            width: 200,
                             child: Text(
-                              name,
+                              '${widget.model?.address}',
                               style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                              ),
+                                  color: Colors.grey, fontSize: 13),
+                              maxLines: 2,
                             ),
                           ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      "Review and Rating",
-                      style:
-                          TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
-                    ),
-                    reviewModel?.totalCount == null ||
-                            reviewModel?.totalCount == ""
-                        ? const Center(
-                            child: Text(
-                            "00",
-                            style: TextStyle(
-                                fontWeight: FontWeight.w600, fontSize: 16),
-                          ))
-                        : Row(
-                            children: [
-                              // SizedBox(width: 8),
-                              Text(
-                                " (${reviewModel?.totalCount})",
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.w600, fontSize: 16),
-                              ),
-                            ],
-                          ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          reviewModel?.data.isEmpty == true ||
-                  reviewModel?.data.length == null ||
-                  reviewModel?.data.length == ""
-              ? const Center(
-                  child: Text("No Review Here",
-                      style: TextStyle(fontWeight: FontWeight.w600)))
-              : Expanded(
-                  child: ListView.builder(
-                    itemCount: reviewModel?.data.length ?? 0,
-                    itemBuilder: (context, index) {
-                      return Column(
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                      height: 48,
-                                      width: 48,
-                                      decoration: BoxDecoration(
-                                          color: Colors.grey,
-                                          borderRadius:
-                                              BorderRadius.circular(4)),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(4),
-                                        child: Image.network(
-                                          'https://developmentalphawizz.com/divyango_new/uploads/profile_pics/${reviewModel?.data[index].profilePic}',
-                                          fit: BoxFit.cover,
-                                        ),
+                          const Icon(
+                            CupertinoIcons.phone,
+                            size: 20,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(
+                            width: 4,
+                          ),
+                          Text(
+                            '${widget.model?.mobile}',
+                            style: const TextStyle(color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 15.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Business hours',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Start & End Time',
+                    style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  Text(
+                    '${widget.model?.startTime} - ${widget.model?.endTime}',
+                    style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+                  const Text(
+                    'Accessibility',
+                    style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600),
+                  ),
+                  const SizedBox(
+                    height: 12,
+                  ),
+
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Flexible(
+                        child: Text.rich(
+                          TextSpan(
+                            children: accessibilityList.map((name) {
+                              return TextSpan(
+                                text: name,
+                                style: const TextStyle(
+                                  color: colors.secondary, // Change to your desired color
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                                children: [
+                                  // Add a comma after each name, except the last one
+                                  if (accessibilityList.last != name)
+                                    TextSpan(
+                                      text: ', ',
+                                      style: const TextStyle(
+                                        color: colors.secondary, // Change to your desired comma color
                                       ),
                                     ),
-                                    const SizedBox(width: 8),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          "${reviewModel?.data[index].username}",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
-                                        ),
-                                        Row(
-                                          children: [
-                                            Image.asset(
-                                              'assets/images/accessible.png',
-                                              height: 20,
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              "${reviewModel?.data[index].revText}",
-                                              style: const TextStyle(
-                                                  color: colors.secondary),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                                ],
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+
+
+                  // Row(
+                  //   crossAxisAlignment: CrossAxisAlignment.start,
+                  //   children: accessibilityList.map((name) {
+                  //     return Padding(
+                  //       padding:
+                  //           const EdgeInsets.all(4), // Space between containers
+                  //       child: Container(
+                  //         // height: 35,
+                  //         // width: 180,
+                  //         decoration: BoxDecoration(
+                  //           color: Colors.white,
+                  //           borderRadius: BorderRadius.circular(5),
+                  //         ),
+                  //         child: Padding(
+                  //           padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
+                  //           child: Text(
+                  //             name,
+                  //             style: const TextStyle(
+                  //               color: colors.secondary,
+                  //               fontSize: 16,
+                  //               fontWeight: FontWeight.w600,
+                  //             ),
+                  //           ),
+                  //         ),
+                  //       ),
+                  //     );
+                  //   }).toList(),
+                  // ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Review and Rating",
+                        style:
+                            TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                      ),
+                      reviewModel?.totalCount == null ||
+                              reviewModel?.totalCount == ""
+                          ? const Center(
+                              child: Text(
+                              "(0)",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 16),
+                            ))
+                          : Row(
+                              children: [
+                                // SizedBox(width: 8),
                                 Text(
-                                  "${reviewModel?.data[index].createdAt}"
-                                      .replaceAll(".000", ""),
+                                  " (${reviewModel?.totalCount})",
                                   style: const TextStyle(
-                                      fontSize: 12,
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.w600),
-                                )
+                                      fontWeight: FontWeight.w600, fontSize: 16),
+                                ),
                               ],
                             ),
-                          ),
-                          Divider(
-                            color: colors.greyTemp,
-                          )
-                        ],
-                      );
-                    },
+                    ],
                   ),
+                ],
+              ),
+            ),
+
+            ///rating bars
+            reviewModel?.accessiblePercentage != null
+            ? Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              child: Column(
+                children: List.generate(3, (index) {
+                  String type = ratingType[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: SizedBox(
+                      // width: 300,
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex:1,
+                            child: Text('${type}',
+                                style: TextStyle(fontSize: 16)),
+                          ),
+                          SizedBox(width: 8),
+                          Expanded(
+                            flex: 2,
+                            child: LinearProgressIndicator(
+                              // value: [0.8, 0.4, 0.1][index],
+                              value: [reviewModel?.accessiblePercentage, reviewModel?.partiallyAccessiblePercentage, reviewModel?.notAccessiblePercentage][index]! / 100,
+                              backgroundColor: Colors.grey[300],
+                              color: index == 0
+                                  ? Colors.green
+                                  : (index == 1
+                                  ? Colors.orange
+                                  : Colors.red),
+                            ),
+                          ),
+                          SizedBox(width: 8),
+                          // Text('${(100 * (1 - 0.2 * index)).toInt()}'),
+                          Text(
+                              index == 0
+                                  ? '${reviewModel?.accessiblePercentage}%'
+                                  : index == 1
+                                    ? '${reviewModel?.partiallyAccessiblePercentage}%'
+                                    : '${reviewModel?.notAccessiblePercentage}%'
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            )
+            : SizedBox(),
+            SizedBox(height: 12,),
+
+            reviewModel?.data.isEmpty == true ||
+                    reviewModel?.data.length == null ||
+                    reviewModel?.data.length == ""
+                ? const Center(
+                    child: Text("No Review Here",
+                        style: TextStyle(fontWeight: FontWeight.w600)))
+                : ListView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  itemCount: reviewModel?.data.length ?? 0,
+                  itemBuilder: (context, index) {
+                    String reviewDate = convertDate(reviewModel?.data[index].createdAt.toString());
+                    return Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    height: 48,
+                                    width: 48,
+                                    decoration: BoxDecoration(
+                                        color: Colors.grey,
+                                        borderRadius:
+                                            BorderRadius.circular(4)),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(4),
+                                      child: Image.network(
+                                        'https://developmentalphawizz.com/divyango_new/uploads/profile_pics/${reviewModel?.data[index].profilePic}',
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "${reviewModel?.data[index].username}",
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                      Row(
+                                        children: [
+                                          Image.asset(
+                                            'assets/images/accessible.png',
+                                            height: 20,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            "${reviewModel?.data[index].revText}",
+                                            style: const TextStyle(
+                                                color: colors.secondary),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Text(
+                                "${reviewDate}"
+                                    .replaceAll(".000", ""),
+                                style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.w600),
+                              )
+                            ],
+                          ),
+                        ),
+                        Divider(
+                          color: colors.greyTemp,
+                        )
+                      ],
+                    );
+                  },
                 )
-        ],
+          ],
+        ),
       ),
     );
   }
